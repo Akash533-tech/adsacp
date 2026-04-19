@@ -330,7 +330,7 @@ with st.sidebar:
     if VERSIONING_AVAILABLE and "snap_mgr" in st.session_state:
         snap_mgr: SnapshotManager = st.session_state.snap_mgr
         col_u, col_r = st.columns(2)
-        if col_u.button("↩ Undo", use_container_width=True):
+        if col_u.button("↩ Undo", width="stretch"):
             restored = snap_mgr.undo(tree)
             if restored:
                 st.session_state.tree = restored
@@ -340,7 +340,7 @@ with st.sidebar:
                 st.rerun()
             else:
                 st.toast("Nothing to undo", icon="⚠️")
-        if col_r.button("↪ Redo", use_container_width=True):
+        if col_r.button("↪ Redo", width="stretch"):
             restored = snap_mgr.redo(tree)
             if restored:
                 st.session_state.tree = restored
@@ -394,12 +394,12 @@ with st.sidebar:
             st.markdown("---")
 
     # ── Control buttons ──────────────────────────────────────────────────────
-    if st.button("🔄 Reset to Demo Data", use_container_width=True):
+    if st.button("🔄 Reset to Demo Data", width="stretch"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
 
-    if st.button("🗑️ Clear All Files", use_container_width=True):
+    if st.button("🗑️ Clear All Files", width="stretch"):
         st.session_state.tree = BPlusTree()
         st.session_state.highlight_keys = []
         st.session_state.highlight_path = []
@@ -589,7 +589,7 @@ elif operation == "🔍 Search":
                         highlight_keys=st.session_state.highlight_keys,
                         highlight_path=path_nodes,
                     )
-                    st.graphviz_chart(dot_inline.source, use_container_width=True)
+                    st.graphviz_chart(dot_inline.source, width="stretch")
                 except Exception as _viz_e:
                     st.warning(f"Tree preview unavailable: {_viz_e}")
 
@@ -610,7 +610,7 @@ elif operation == "🔍 Search":
                 with st.expander("🌲 Tree (no match highlighted)"):
                     try:
                         dot_empty = render_bplus_tree(tree)
-                        st.graphviz_chart(dot_empty.source, use_container_width=True)
+                        st.graphviz_chart(dot_empty.source, width="stretch")
                     except Exception:
                         pass
 
@@ -690,7 +690,7 @@ elif operation == "🔎 Prefix Search":
                     "Size": r.size_display(), "Path": r.path,
                     "Modified": r.age_display(), "Tags": ", ".join(r.tags),
                 } for r in results])
-                st.dataframe(df, use_container_width=True, hide_index=True)
+                st.dataframe(df, width="stretch", hide_index=True)
                 st.session_state.highlight_keys = [r.filename for r in results]
             else:
                 st.warning(f"No files found with prefix `{prefix.strip()}`")
@@ -716,7 +716,7 @@ elif operation == "📅 Range Query":
                     "Filename": r.filename, "Type": r.ext_icon(),
                     "Size": r.size_display(), "Path": r.path,
                 } for r in results])
-                st.dataframe(df, use_container_width=True, hide_index=True)
+                st.dataframe(df, width="stretch", hide_index=True)
             st.session_state.highlight_keys = [r.filename for r in results]
             st.rerun()
 
@@ -730,7 +730,7 @@ elif operation == "📊 All Files":
             "Size": m.size_display(), "Path": m.path,
             "Modified": m.age_display(), "Tags": ", ".join(m.tags),
         } for m in all_files])
-        st.dataframe(df, use_container_width=True, hide_index=True)
+        st.dataframe(df, width="stretch", hide_index=True)
     else:
         st.info("No files in the tree.")
 
@@ -790,7 +790,7 @@ with tab_tree:
                     split_nodes=st.session_state.split_nodes,
                     merge_nodes=st.session_state.merge_nodes,
                 )
-                st.graphviz_chart(dot.source, use_container_width=True)
+                st.graphviz_chart(dot.source, width="stretch")
             except Exception as e:
                 st.error(f"⚠️ Visualization error: {e}")
                 st.info("Ensure Graphviz binary is installed. macOS: `brew install graphviz`")
@@ -807,7 +807,7 @@ with tab_tree:
         st.subheader("Leaf Node Linked List")
         if VIZ_AVAILABLE:
             try:
-                st.graphviz_chart(render_leaf_chain(tree).source, use_container_width=True)
+                st.graphviz_chart(render_leaf_chain(tree).source, width="stretch")
             except Exception as e:
                 st.error(f"⚠️ {e}")
         leaves = tree.get_all_leaves()
@@ -829,7 +829,7 @@ with tab_tree:
                 try:
                     st.graphviz_chart(
                         render_bplus_tree(tree, highlight_path=path_nodes).source,
-                        use_container_width=True,
+                        width="stretch",
                     )
                 except Exception as e:
                     st.error(f"Visualization error: {e}")
@@ -877,7 +877,7 @@ with tab_tree:
     with st.sidebar:
         st.markdown("---")
         if st.session_state.animating:
-            if st.button("⏹ Stop Animation", use_container_width=True, key="btn_stop", type="primary"):
+            if st.button("⏹ Stop Animation", width="stretch", key="btn_stop", type="primary"):
                 st.session_state.animating = False
                 st.session_state.highlight_keys = []
                 st.rerun()
@@ -885,7 +885,7 @@ with tab_tree:
             st.caption(f"Step {idx} / {len(DEMO_FILES)}")
             st.progress(idx / len(DEMO_FILES))
         else:
-            if st.button("🎬 Animate Build", use_container_width=True, key="btn_animate"):
+            if st.button("🎬 Animate Build", width="stretch", key="btn_animate"):
                 st.session_state.tree = BPlusTree()
                 st.session_state.highlight_keys = []
                 st.session_state.highlight_path = []
@@ -1389,7 +1389,7 @@ with tab_compress:
             st.markdown("**Run breakdown table:**")
             bd_df = visualizer.render_run_breakdown_table(rle_result)
             if not bd_df.empty:
-                st.dataframe(bd_df, use_container_width=True, hide_index=True)
+                st.dataframe(bd_df, width="stretch", hide_index=True)
 
         st.markdown("---")
 
@@ -1524,7 +1524,7 @@ with tab_compress:
                             "Count": s.count, "Char": repr(s.character),
                             "Output so far": s.decoded_so_far[:50],
                         } for s in decode_steps])
-                        st.dataframe(decode_df, use_container_width=True, hide_index=True)
+                        st.dataframe(decode_df, width="stretch", hide_index=True)
         else:
             st.info("💡 No compressed files yet — compress a file above first.")
 
@@ -1536,7 +1536,7 @@ with tab_compress:
         if all_entries_dash:
             summary_df = compress_store.get_summary_df()
             st.dataframe(
-                summary_df, use_container_width=True, hide_index=True,
+                summary_df, width="stretch", hide_index=True,
                 column_config={
                     "Ratio": st.column_config.ProgressColumn("Ratio", min_value=0, max_value=10, format="%.2f×"),
                     "Saved%": st.column_config.NumberColumn("Space saved", format="%.1f%%"),
@@ -1588,11 +1588,11 @@ with tab_compress:
                     margin=dict(t=20, b=60, l=0, r=0),
                     showlegend=False,
                 )
-                st.plotly_chart(_fig, use_container_width=True)
+                st.plotly_chart(_fig, width="stretch")
                 st.caption("🟢 Green ≥ 1.0 = RLE helped   🔴 Red < 1.0 = RLE expanded the file")
             elif chart_data:
                 # Plotly not available — plain table instead (never triggers Vega-Lite)
-                st.dataframe(pd.DataFrame(chart_data), use_container_width=True, hide_index=True)
+                st.dataframe(pd.DataFrame(chart_data), width="stretch", hide_index=True)
         else:
             st.info("💡 Compress some files to see the dashboard.")
 
@@ -1637,7 +1637,7 @@ with tab_compress:
                 st.success(
                     f"✅ {compressed_count} compressed, ❌ {expanded_count} expanded — RLE is selective!"
                 )
-                st.dataframe(pd.DataFrame(batch_rows), use_container_width=True, hide_index=True)
+                st.dataframe(pd.DataFrame(batch_rows), width="stretch", hide_index=True)
                 st.rerun()
 
 
@@ -1781,14 +1781,14 @@ with tab_analytics:
                     margin=dict(t=10, l=0, b=0, r=0),
                     height=420,
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
             else:
                 st.info("Install `plotly` for the treemap: `pip install plotly`")
                 ext_df = analyzer.get_extension_breakdown(tree)
                 if not ext_df.empty:
                     st.dataframe(
                         ext_df[["extension", "count", "total_bytes"]],
-                        use_container_width=True, hide_index=True,
+                        width="stretch", hide_index=True,
                     )
 
             # ── Extension breakdown ───────────────────────────────────────────
@@ -1812,8 +1812,8 @@ with tab_analytics:
                         height=300,
                         margin=dict(t=20, b=40),
                     )
-                    st.plotly_chart(fig2, use_container_width=True)
-                st.dataframe(ext_df, use_container_width=True, hide_index=True)
+                    st.plotly_chart(fig2, width="stretch")
+                st.dataframe(ext_df, width="stretch", hide_index=True)
 
             # ── Largest files ─────────────────────────────────────────────────
             st.subheader("Largest Files")
@@ -1836,7 +1836,7 @@ with tab_analytics:
                     "Size": r.size_display(),
                     "Path": r.path,
                 } for r in recent])
-                st.dataframe(recent_df, use_container_width=True, hide_index=True)
+                st.dataframe(recent_df, width="stretch", hide_index=True)
 
             # ── Directory sizes ───────────────────────────────────────────────
             st.subheader("Directory Sizes")
@@ -1846,7 +1846,7 @@ with tab_analytics:
                     {"Directory": d, "Total Size": _human_size(s), "Bytes": s}
                     for d, s in dir_sizes.items()
                 ]).sort_values("Bytes", ascending=False).drop(columns=["Bytes"])
-                st.dataframe(dir_df, use_container_width=True, hide_index=True)
+                st.dataframe(dir_df, width="stretch", hide_index=True)
 
 
 
@@ -2151,7 +2151,7 @@ if tree.operation_log:
     log_df = pd.DataFrame(log_slice)
     st.dataframe(
         log_df,
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
         column_config={
             "timestamp":      st.column_config.TextColumn("Time"),
