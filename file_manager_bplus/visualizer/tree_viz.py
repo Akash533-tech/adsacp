@@ -62,7 +62,7 @@ def _make_internal_label(node: BPlusNode) -> str:
 def _make_leaf_label(node: BPlusNode) -> str:
     """
     Build a record label for a leaf node.
-    Each slot shows: filename | ext | size
+    Each slot shows: filename | ext | size | [RLE ratio badge if compressed]
     """
     if not node.keys:
         return "{∅}"
@@ -70,7 +70,12 @@ def _make_leaf_label(node: BPlusNode) -> str:
     for i, (key, val) in enumerate(zip(node.keys, node.values)):
         size_str = val.size_display() if val else "?"
         ext_str  = val.extension if val else ""
-        slot = f'<k{i}>{_esc(key)} | {_esc(ext_str)} | {_esc(size_str)}'
+        # RLE compression badge
+        rle_badge = ""
+        if val and getattr(val, 'is_compressed', False) and getattr(val, 'rle_ratio', None):
+            ratio = val.rle_ratio
+            rle_badge = f" [{ratio:.1f}x]"
+        slot = f'<k{i}>{_esc(key)} | {_esc(ext_str)} | {_esc(size_str)}{_esc(rle_badge)}'
         slots.append(slot)
     return "{" + " | ".join(slots) + "}"
 

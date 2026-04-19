@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 
 @dataclass
@@ -13,6 +13,10 @@ class FileMetadata:
     path: str                   # virtual path: /root/docs/file.txt
     tags: List[str] = field(default_factory=list)
     is_directory: bool = False
+    compressed_ratio: Optional[float] = None   # legacy LZW field (kept for compat)
+    rle_ratio: Optional[float] = None          # set after RLE compression
+    is_compressed: bool = False                # True if RLE compressed copy exists
+    content_type: Optional[str] = None        # "bitmap" | "log" | "text" | "binary"
 
     def size_display(self) -> str:
         """Return '12.4 KB', '3.2 MB', '1.1 GB' etc."""
